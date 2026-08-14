@@ -1,0 +1,22 @@
+# Private keys & Secrets
+*.pem
+*.key
+*.id_rsa
+*.pub
+vault-password.txt
+
+# Ansible execution artifacts
+*.retry
+*.log
+.ansible/
+
+# Python & Virtual Environments
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# OS & Editor junk
+.DS_Store
+.idea/
+.vscode/

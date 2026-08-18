@@ -1,30 +1,46 @@
 ---
-- name: Configure web servers
+- name: Configure webservers
   hosts: webservers
   become: true
 
   tasks:
 
-    - name: Install Nginx
-      ansible.builtin.yum:
-        name: nginx
+    - name: Create system users
+      ansible.builtin.user:
+        name: "{{ item }}"
+        system: true
         state: present
+      loop: "{{ system_users }}"
 
-    - name: Start and enable Nginx
-      ansible.builtin.service:
-        name: nginx
-        state: started
-        enabled: true
+    - name: Run Amazon Linux specific task
+      ansible.builtin.debug:
+        msg: "This server is running Amazon Linux"
+      when: ansible_distribution == "Amazon"
 
-    - name: Deploy index.html
-      ansible.builtin.copy:
-        src: files/index.html
-        dest: /usr/share/nginx/html/index.html
-      notify: Reload Nginx
+    - name: Check disk usage
+      ansible.builtin.shell: df -h /
+      register: disk_usage
+      changed_when: false
+
+    - name: Display disk usage
+      ansible.builtin.debug:
+        msg: "{{ disk_usage.stdout }}"
+
+    - name: Deploy nginx configuration
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/conf.d/myapp.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload nginx
 
   handlers:
 
-    - name: Reload Nginx
+    - name: Reload nginx
       ansible.builtin.service:
         name: nginx
         state: reloaded
+
+  roles:
+    - nginx

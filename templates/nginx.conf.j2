@@ -1,0 +1,15 @@
+server {
+    listen {{ nginx_port }};
+    server_name {{ server_name }};
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+
+{% for ip in allowed_ips %}
+    allow {{ ip }};
+{% endfor %}
+
+    deny all;
+}

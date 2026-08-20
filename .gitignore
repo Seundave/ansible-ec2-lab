@@ -4,6 +4,7 @@
 *.id_rsa
 *.pub
 vault-password.txt
+.vault_pass
 
 # Ansible execution artifacts
 *.retry
